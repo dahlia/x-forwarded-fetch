@@ -8,6 +8,10 @@ Version 0.2.0
 
 To be released.
 
+ -  Fixed a bug that a `Request.body` had been truncated on Bun.
+ -  The return type of `getXForwardedRequest()` is changed from `Request`
+    to `Promise<Request>`.
+
 
 Version 0.1.0
 -------------

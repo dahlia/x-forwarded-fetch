@@ -12,7 +12,7 @@ Deno.test("getXForwardedRequest()", async () => {
       },
     },
   );
-  const getRequestResult = getXForwardedRequest(getRequest);
+  const getRequestResult = await getXForwardedRequest(getRequest);
   assertEquals(getRequestResult.url, "https://example.com/foo/bar?baz=qux");
   assertFalse(getRequestResult.headers.has("X-Forwarded-Proto"));
   assertFalse(getRequestResult.headers.has("X-Forwarded-Host"));
@@ -32,7 +32,7 @@ Deno.test("getXForwardedRequest()", async () => {
       body,
     },
   );
-  const postRequestResult = getXForwardedRequest(postRequest);
+  const postRequestResult = await getXForwardedRequest(postRequest);
   assertEquals(postRequestResult.url, "https://example.com/foo/bar");
   assertFalse(postRequestResult.headers.has("X-Forwarded-Proto"));
   assertFalse(postRequestResult.headers.has("X-Forwarded-Host"));

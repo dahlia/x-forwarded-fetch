@@ -12,7 +12,8 @@ export type Fetch = (request: Request) => Promise<Response> | Response;
  * @returns A decorated `fetch()` function.
  */
 export function behindProxy(fetch: Fetch): Fetch {
-  return async (request: Request) => await fetch(getXForwardedRequest(request));
+  return async (request: Request) =>
+    await fetch(await getXForwardedRequest(request));
 }
 
 /**
@@ -20,7 +21,7 @@ export function behindProxy(fetch: Fetch): Fetch {
  * @param request A request object to be transformed.
  * @returns A new request object with `X-Forwarded-*` headers applied.
  */
-export function getXForwardedRequest(request: Request): Request {
+export async function getXForwardedRequest(request: Request): Promise<Request> {
   const url = new URL(request.url);
   const headers = new Headers(request.headers);
   const proto = request.headers.get("X-Forwarded-Proto");
@@ -41,9 +42,10 @@ export function getXForwardedRequest(request: Request): Request {
   return new Request(url, {
     method: request.method,
     headers,
-    body: request.body,
+    body: request.method === "GET" || request.method === "HEAD"
+      ? undefined
+      : await request.blob(),
     // @ts-ignore: TS2353
-    duplex: "half",
     referrer: "referrer" in request ? request.referrer as string : undefined,
     // deno-lint-ignore no-explicit-any
     referrerPolicy: request.referrerPolicy as any,
